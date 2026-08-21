@@ -1,0 +1,30 @@
+#include <zephyr/dt-bindings/pwm/pwm.h>
+
+&i2c1 {
+	ds1307: ds1307@68 {
+		compatible = "maxim,ds1307";
+		reg = <0x68>;
+	};
+};
+
+&timers2 {
+    status = "okay";
+    st,prescaler = <9>;   /* tune later once you know your target PWM freq */
+    pwm2: pwm {
+        status = "okay";
+        pinctrl-0 = <&tim2_ch2_pa1>;   /* was tim2_ch1_pa1 - PA1 is CH2, not CH1 */
+        pinctrl-names = "default";
+    };
+};
+
+/ {
+    pwmleds {
+        compatible = "pwm-leds";
+        motor_pwm_out: motor_pwm_out {
+            pwms = <&pwm2 2 PWM_KHZ(1) PWM_POLARITY_NORMAL>;
+        };
+    };
+    aliases {
+        motor-pwm = &motor_pwm_out;
+    };
+};
